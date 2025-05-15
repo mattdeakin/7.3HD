@@ -244,21 +244,23 @@ pipeline {
     }
 
     post {
-        // Runs regardless of the pipeline's success or failure
-        always {
-            echo "Pipeline execution finished."
+    // Runs regardless of the pipeline's success or failure
+    always {
+        // cleanWs() needs to be in an agent context
+        node { // <<< THIS IS THE IMPORTANT WRAPPER
+            echo "Pipeline execution finished. Cleaning workspace..."
             // Clean up the workspace to save disk space on the Jenkins agent
             cleanWs()
-        }
-        // Runs only if the pipeline is successful
-        success {
-            echo "Pipeline completed successfully!"
-            // Add notifications here (e.g., Slack, Email) if desired
-        }
-        // Runs only if the pipeline failed
-        failure {
-            echo "Pipeline failed. Please check console output and logs."
-            // Add notifications here
-        }
+        } // <<< AND ITS CLOSING BRACE
+    }
+    // Runs only if the pipeline is successful
+    success {
+        echo "Pipeline completed successfully!"
+        // Add notifications here (e.g., Slack, Email) if desired
+    }
+    // Runs only if the pipeline failed
+    failure {
+        echo "Pipeline failed. Please check console output and logs."
+        // Add notifications here
     }
 }
